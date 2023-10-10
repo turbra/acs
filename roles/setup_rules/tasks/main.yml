@@ -1,0 +1,30 @@
+---
+- name: Fetch the ID of existing OpenShift auth provider
+  uri:
+    url: "https://{{ CENTRAL }}/v1/authProviders"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ ROX_API_TOKEN }}"
+    validate_certs: no
+    return_content: yes
+  register: auth_provider_response
+
+- set_fact:
+    AUTH_ID: "{{ (auth_provider_response.json | selectattr('name', 'equalto', 'OpenShift') | first).id }}"
+
+- name: Create custom rule for ocp-admins
+  uri:
+    url: "https://{{ CENTRAL }}/v1/groupsbatch"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ ROX_API_TOKEN }}"
+    body_format: json
+    body:
+      previous_groups: []
+      required_groups:
+        - props:
+            authProviderId: "{{ AUTH_ID }}"
+            key: "groups"
+            value: "{{ group_name }}"
+          roleName: "{{ role_name }}"
+    validate_certs: no

@@ -1,0 +1,68 @@
+---
+- name: Get an API token from StackRox
+  uri:
+    url: "https://{{ CENTRAL }}/v1/apitokens/generate"
+    method: POST
+    user: admin
+    password: "{{ CENTRAL_PASS }}"
+    body: "{{ POLICY_JSON | to_json }}"
+    body_format: json
+    return_content: yes
+    validate_certs: no
+  register: api_token_response
+
+- set_fact:
+    ROX_API_TOKEN: "{{ api_token_response.json.token }}"
+
+- name: Create the OpenShift auth SSO
+  uri:
+    url: "https://{{ CENTRAL }}/v1/authProviders"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ ROX_API_TOKEN }}"
+    body:
+      id: ""
+      name: "OpenShift"
+      type: "openshift"
+      config: {}
+      uiEndpoint: "{{ CENTRAL }}"
+      enabled: true
+    body_format: json
+    return_content: yes
+    validate_certs: no
+  register: openshift_auth_response
+
+- set_fact:
+    AUTH_ID: "{{ openshift_auth_response.json.id }}"
+
+- name: Add minimum access role
+  uri:
+    url: "https://{{ CENTRAL }}/v1/groupsbatch"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ ROX_API_TOKEN }}"
+    body:
+      previous_groups: []
+      required_groups:
+        - props:
+            authProviderId: "{{ AUTH_ID }}"
+          roleName: "Analyst"
+    body_format: json
+    validate_certs: no
+
+- name: Add custom rule for ocp-admins
+  uri:
+    url: "https://{{ CENTRAL }}/v1/groupsbatch"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ ROX_API_TOKEN }}"
+    body:
+      previous_groups: []
+      required_groups:
+        - props:
+            authProviderId: "{{ AUTH_ID }}"
+            key: "groups"
+            value: "ocp-admins"
+          roleName: "Admin"
+    body_format: json
+    validate_certs: no

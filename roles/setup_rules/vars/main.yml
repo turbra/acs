@@ -1,0 +1,4 @@
+CENTRAL: central-stackrox.apps.example.com
+CENTRAL_PASS: CENTRAL-PASSWORD
+group_name: dev-group
+role_name: Analyst

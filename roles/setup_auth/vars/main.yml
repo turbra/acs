@@ -1,0 +1,5 @@
+CENTRAL: central-stackrox.apps.example.com
+CENTRAL_PASS: CENTRAL-PASSWORD
+POLICY_JSON:
+  name: mytoken
+  role: Admin
