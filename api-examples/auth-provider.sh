@@ -12,7 +12,6 @@ CURLEXEC=$( curl -s -k -H "Authorization: Bearer ${ROX_API_TOKEN}" --header "Con
 
 echo $CURLEXEC
 
-#AUTH_ID=echo $CURLEXEC | jq -r '.id'
 AUTH_ID=$(echo $CURLEXEC | jq -r '.id')
 
 
