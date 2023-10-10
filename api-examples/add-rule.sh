@@ -1,3 +1,5 @@
+#!/usr/bin/bash
+
 CENTRAL=central.example.com
 CENTRAL_PASS="AdminPassForCentral"
 
