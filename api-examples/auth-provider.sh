@@ -21,7 +21,7 @@ echo "Created integration with ID $AUTH_ID"
 echo
 
 # add minimum access role
-MIN_ROLE='{"previous_groups":[],"required_groups":[{"props":{"authProviderId":"'"${AUTH_ID}"'"},"roleName":"Analyst"}]}'
+MIN_ROLE='{"previous_groups":[],"required_groups":[{"props":{"authProviderId":"'"${AUTH_ID}"'"},"roleName":"None"}]}'
 curl -k -H "Authorization: Bearer ${ROX_API_TOKEN}" --header "Content-Type: application/json" -X POST "https://${CENTRAL}/v1/groupsbatch" -d "$MIN_ROLE"
 
 # Custom rule for ocp-admins - substitute for your relevant group name
